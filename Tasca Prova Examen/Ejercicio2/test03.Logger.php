@@ -1,58 +1,93 @@
 <?php
 
-include_once("class.pdofactory.php");
-include_once("abstract.databoundobject.php");
-include_once("class.loguserapp.php");
+  include_once("class.pdofactory.php");
+  include_once("abstract.databoundobject.php");
+  include_once("class.loguserapp.php");
 
-$connectionString = "file:parse\logUserApp.log";
-$connectionString2 = "pgsql:dbname=usuaris;host=localhost;port=5432;user=postgres;password=postgres";
+  class UserApp extends DataBoundObject {
 
-$urlData = parse_url($connectionString);
-$urlData2 = parse_url($connectionString2);
+    protected $ID;
+    protected $Nom;
+    protected $Group;
+    protected $Created;
 
-var_dump($urlData);
-var_dump($urlData2);
-
-if (!isset($urlData['scheme'])) {
-  throw new Exception("Invalid scheme connection.\n");
-}
-
-if (!isset($urlData2['scheme'])) {
-  throw new Exception("Invalid scheme connection2.\n");
-}
+    protected $LastUpdate;
+    protected $IsActive;
 
 
-$fileName = 'Logger/class.' . $urlData['scheme'] . 'LoggerBackend.php';
-$fileName2 = 'Logger/class.' . $urlData2['scheme'] . 'LoggerBackend.php';
+    protected function DefineTableName() {
+            return("userapp");
+    }
+
+    protected function DefineRelationMap() {
+            return(array(
+                    "id" => "ID",
+                    "nom" => "Nom",
+                    "group" => "Group",
+                    "created" => "Created",
+                    "lastUpdate" => "LastUpdate",
+                    "isActive" => "IsActive"
+            ));
+    }
+  }
 
 
-include_once($fileName);
-include_once($fileName2);
+  $connectionString = "file:parse\logUserApp.log";
+  $connectionString2 = "pgsql:dbname=usuaris;host=localhost;port=5432;user=postgres;password=postgres";
 
-$className = $urlData['scheme'] . 'LoggerBackend';
-$className2 = $urlData2['scheme'] . 'LoggerBackend';
+  $urlData = parse_url($connectionString);
+  $urlData2 = parse_url($connectionString2);
 
-print "Class Name: " . $className . "\n";
-print "Class Name: " . $className2 . "\n";
+  var_dump($urlData);
+  var_dump($urlData2);
 
-if (!class_exists($className)) {
-  throw new Exception("No loggind bakend available for " . $urlData['scheme']);
-}
+  if (!isset($urlData['scheme'])) {
+    throw new Exception("Invalid scheme connection.\n");
+  }
 
-if (!class_exists($className2)) {
-  throw new Exception("No loggind bakend available for " . $urlData2['scheme']);
-}
+  if (!isset($urlData2['scheme'])) {
+    throw new Exception("Invalid scheme connection2.\n");
+  }
 
 
-$log = $className::getInstance();
-$log->logMessage('Postres logger test debug.', $className::DEBUG, 1, 1);
-$log->logMessage('Postres logger test info.', $className::INFO,2, 1);
-$log->logMessage('Postres logger test warning.', $className::WARNING,3, 1);
+  $fileName = 'Logger/class.' . $urlData['scheme'] . 'LoggerBackend.php';
+  $fileName2 = 'Logger/class.' . $urlData2['scheme'] . 'LoggerBackend.php';
 
-// $log2 = $className2::getInstance();
-// $log2->logMessage('Postres logger test debug.', $className2::DEBUG);
-// $log2->logMessage('Postres logger test info.', $className2::INFO);
-// $log2->logMessage('Postres logger test warning.', $className2::WARNING);
 
-print "Logger " . $urlData['scheme'] . " created. [END]\n";
-print "Logger " . $urlData2['scheme'] . " created. [END]\n";
+  include_once($fileName);
+  include_once($fileName2);
+
+  $className = $urlData['scheme'] . 'LoggerBackend';
+  $className2 = $urlData2['scheme'] . 'LoggerBackend';
+
+  print "Class Name: " . $className . "\n";
+  print "Class Name: " . $className2 . "\n";
+
+  if (!class_exists($className)) {
+    throw new Exception("No loggind bakend available for " . $urlData['scheme']);
+  }
+
+  if (!class_exists($className2)) {
+    throw new Exception("No loggind bakend available for " . $urlData2['scheme']);
+  }
+
+
+  $log = $className::getInstance();
+  $log2 = $className2::getInstance();
+
+
+  $strDSN = "pgsql:dbname=usuaris;host=localhost;port=5432";
+  $objPDO = PDOFactory::GetPDO($strDSN, "postgres", "root",array());
+  $objPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+  $objUserApp = new UserApp($objPDO,$log,$className,$log2,$className2);
+  $ahora = date('Y-m-d H:i:s');
+
+
+  $objUserApp->setNom('Yaya Adri');
+  $objUserApp->setGroup('Patinete Jaraca');
+  $objUserApp->setLastUpdated($ahora);
+  $objUserApp->setIsActive(0);
+  $objUserApp->Save();
+
+  $objUserApp->xetoNombre('Yaya Gerard');

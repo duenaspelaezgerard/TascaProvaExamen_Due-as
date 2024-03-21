@@ -44,7 +44,7 @@ class pgsqlLoggerBackend {
 	}
 
 
-	public function logMessage($msg, $logLevel = pgsqlLoggerBackend::INFO, $id=null, $fecha = null){
+	public function logMessage($id, $estaActivo,  $fecha, $msg, $logLevel = pgsqlLoggerBackend::INFO){
 
 		if ($logLevel > $this->logLevel){
 			return false;
@@ -53,9 +53,32 @@ class pgsqlLoggerBackend {
         $strDSN = "pgsql:dbname=usuaris;host=localhost;port=5432";
         $objPDO = PDOFactory::GetPDO($strDSN, "postgres", "postgres",array());
         $objPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				
-		$objLog = new Logdata($objPDO);
- 		 
+		
+		
+		date_default_timezone_set('America/New_York');
+		$formatterDate = DateTimeImmutable::createFromFormat('U',time());
+		$time = $formatterDate->format('Y-m-d H:i:s');
+
+		$msg = str_replace("\t", "", $msg);
+		$msg = str_replace("\n", "", $msg);
+
+		$strlogLevel = $this->levelToString($logLevel);
+
+		$message = $time."\t".$strlogLevel."\t".$msg."\n";
+		
+		if (isset($id)) {
+			$IdLog = $id;
+		} else {
+			$IdLog = 0;
+		} 
+
+
+		$objLog = new LogUserApp($objPDO);
+		$objLog->setIDUserApp($IdLog);
+		$objLog->setComentari($msg);
+		$objLog->setCodi($logLevel);
+	   	$objLog->setIsActive($estaActivo);
+		$objLog->Save();
 		
 
 	}

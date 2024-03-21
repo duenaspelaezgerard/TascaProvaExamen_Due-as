@@ -10,10 +10,15 @@ abstract class DataBoundObject {
    protected $blIsLoaded;
    protected $arModifiedRelations;
 
+   protected $logfile;
+   protected $logpgsql;
+   protected $classNameFile;
+   protected $classNamePgsql;
+
    abstract protected function DefineTableName();
    abstract protected function DefineRelationMap();
 
-   public function __construct(PDO $objPDO, $id = NULL) {
+   public function __construct(PDO $objPDO,$log = NULL, $className = NULL, $log2 = NULL, $className2 = NULL, $id = NULL ) {
 
       $this->strTableName = $this->DefineTableName();
       $this->arRelationMap = $this->DefineRelationMap();
@@ -22,6 +27,22 @@ abstract class DataBoundObject {
 
       if (isset($id)) {
          $this->ID = $id;
+      };
+
+      if (isset($logf)) {
+         $this->logfile = $className::getInstance();
+      };
+
+      if (isset($logp)) {
+         $this->logpgsql = $className2::getInstance();
+      };
+
+      if (isset($className)) {
+         $this->classNameFile = $className;
+      };
+
+      if (isset($className2)) {
+         $this->classNamePgsql = $className2;
       };
 
       $this->arModifiedRelations = array();
@@ -174,6 +195,29 @@ abstract class DataBoundObject {
          case "get":
             return($this->GetAccessor($strMethodMember));   
       };
+
+      date_default_timezone_set('America/New_York');
+      $formatterDate = DateTimeImmutable::createFromFormat('U',time());
+      $time = $formatterDate->format('Y-m-d H:i:s');
+
+      if (isset($this->ID)) {
+         $IdLog = $this->ID;
+      } else {
+         $IdLog = 0;
+      }
+      $active = $this->IsActive;
+      
+      var_dump($this->logfile);
+
+      $this->logfile->logMessage($IdLog,$active,$time,'ERROR', $this->classNameFile::CRITICAL);
+
+      $this->logpgsql->logMessage($IdLog,$active,$time,'ERROR', $this->classNameFile::CRITICAL);
+
+
+
+
+
+
       return(false);   
 
    }

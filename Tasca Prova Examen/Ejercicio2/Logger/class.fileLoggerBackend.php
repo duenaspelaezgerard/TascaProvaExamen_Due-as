@@ -24,7 +24,7 @@ class fileLoggerBackend {
 	  			printf("No puedo abrir el fichero %s", $this->logFile);
 	  			return false;
 	  		}
-	  		echo "File opened...\n";
+	  		echo "Archivo abierto...\n";
 	}
 
 	public static function getInstance(){
@@ -42,7 +42,7 @@ class fileLoggerBackend {
 	}
 
 
-	public function logMessage($msg, $logLevel = fileLoggerBackend::INFO, $id=null, $fecha = null){
+	public function logMessage($id, $estaActivo,$logLevel = fileLoggerBackend::INFO,  $fecha, $msg ){
 		if ($logLevel > $this->logLevel){
 			return false;
 		}
@@ -56,7 +56,7 @@ class fileLoggerBackend {
 
 	  	$strlogLevel = $this->levelToString($logLevel);
 
-	  	$message = $time."\t".$strlogLevel."\t".$msg."\n";
+	  	$message = $id. "@@"."\t". $estaActivo. "@@"."\t". $strlogLevel. "@@"."\t". $time."@@"."\t"."@@"."\t".$msg."\n";
 	  	fwrite($this->confile, $message);
 
 	}

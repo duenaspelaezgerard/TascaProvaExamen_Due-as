@@ -2,7 +2,7 @@
 
         include_once("abstract.databoundobject.php");
 
-        class Logdata extends DataBoundObject {
+        class LogUserApp extends DataBoundObject {
 
                 protected $IdUserApp;
                 protected $IsActive;
