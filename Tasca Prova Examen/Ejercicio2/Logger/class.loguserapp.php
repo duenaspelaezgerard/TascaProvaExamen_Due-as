@@ -16,11 +16,11 @@
 
                 protected function DefineRelationMap() {
                         return(array(
-                                "idUserApp" => "IdUserApp",                             
+                                "iduserapp" => "IdUserApp",
+                                "isactive" => "IsActive",
                                 "codi" => "Codi",
-                                "comentari" => "Comentari",
-                                "regTime" => "Regtime",
-                                "isActive" => "IsActive"));
+                                "regtime" => "Regtime",
+                                "comentari" => "Comentari"));
                 }
         }
 

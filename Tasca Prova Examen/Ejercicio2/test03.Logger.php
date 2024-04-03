@@ -60,8 +60,11 @@
   $className = $urlData['scheme'] . 'LoggerBackend';
   $className2 = $urlData2['scheme'] . 'LoggerBackend';
 
-  print "Class Name: " . $className . "\n";
-  print "Class Name: " . $className2 . "\n";
+  print "<br/>";
+  print "Class Name1: " . $className . "\n";
+  print "<br/>";
+  print "Class Name2: " . $className2 . "\n";
+  print "<br/>";
 
   if (!class_exists($className)) {
     throw new Exception("No loggind bakend available for " . $urlData['scheme']);
@@ -75,14 +78,12 @@
   $log = $className::getInstance();
   $log2 = $className2::getInstance();
 
-
   $strDSN = "pgsql:dbname=usuaris;host=localhost;port=5432";
-  $objPDO = PDOFactory::GetPDO($strDSN, "postgres", "root",array());
+  $objPDO = PDOFactory::GetPDO($strDSN, "postgres", "postgres",array());
   $objPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
   $objUserApp = new UserApp($objPDO,$log,$className,$log2,$className2);
   $ahora = date('Y-m-d H:i:s');
-
 
   $objUserApp->setNom('Yaya Adri');
   $objUserApp->setGroup('Patinete Jaraca');
@@ -90,4 +91,4 @@
   $objUserApp->setIsActive(0);
   $objUserApp->Save();
 
-  $objUserApp->xetoNombre('Yaya Gerard');
+  $objUserApp->xetNom('Yaya Gerard');

@@ -155,7 +155,7 @@ abstract class DataBoundObject {
          }
 
          $objStatement->execute();
-         $this->ID = $this->objPDO->lastInsertId($this->strTableName . "_id_seq");
+         $this->ID = $this->objPDO->lastInsertId($this->strTableName);
 
       }
    }

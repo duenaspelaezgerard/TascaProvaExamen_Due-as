@@ -1,4 +1,5 @@
 <?php
+
 include_once("class.loguserapp.php");
 
 class pgsqlLoggerBackend {
@@ -18,7 +19,9 @@ class pgsqlLoggerBackend {
 		
 			$this->logLevel = 100;
 			$this->logFile = "logUserApp.log";
-			echo "File: ".$this->logFile."\n";
+			// echo "File: ".$this->logFile."\n";
+			// print "<br/>";
+			
 
 			$this->confile = fopen($this->logFile, 'a+');
 
@@ -27,6 +30,7 @@ class pgsqlLoggerBackend {
 	  			return false;
 	  		}
 	  		echo "File opened...\n";
+			  print "<br/>";
 	}
 
 	public static function getInstance(){
@@ -44,17 +48,24 @@ class pgsqlLoggerBackend {
 	}
 
 
-	public function logMessage($id, $estaActivo,  $fecha, $msg, $logLevel = pgsqlLoggerBackend::INFO){
+	public function logMessage($id, $valActive,  $fecha, $msg, $logLevel = fileLoggerBackend::INFO){
 
 		if ($logLevel > $this->logLevel){
 			return false;
 		}
-	
+		
+		if (isset($id)) {
+			$IdLog = $id;
+		} else {
+			$IdLog = 0;
+		} 
+
         $strDSN = "pgsql:dbname=usuaris;host=localhost;port=5432";
         $objPDO = PDOFactory::GetPDO($strDSN, "postgres", "postgres",array());
         $objPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		
-		
+				
+		$objLog = new LogUserApp($objPDO);
+ 		
 		date_default_timezone_set('America/New_York');
 		$formatterDate = DateTimeImmutable::createFromFormat('U',time());
 		$time = $formatterDate->format('Y-m-d H:i:s');
@@ -66,19 +77,15 @@ class pgsqlLoggerBackend {
 
 		$message = $time."\t".$strlogLevel."\t".$msg."\n";
 		
-		if (isset($id)) {
-			$IdLog = $id;
-		} else {
-			$IdLog = 0;
-		} 
+		echo'<br> dentro logmessage pgsql';
 
 
 		$objLog = new LogUserApp($objPDO);
-		$objLog->setIDUserApp($IdLog);
-		$objLog->setComentari($msg);
-		$objLog->setCodi($logLevel);
-	   	$objLog->setIsActive($estaActivo);
-		$objLog->Save();
+		$objLog->setIdUserApp($IdLog);
+ 		$objLog->setComentari($msg);
+ 		$objLog->setCodi($logLevel);
+		$objLog->setIsActive($valActive);
+ 		$objLog->Save();
 		
 
 	}
