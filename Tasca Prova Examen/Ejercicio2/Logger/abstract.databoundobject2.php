@@ -18,33 +18,17 @@ abstract class DataBoundObject {
    abstract protected function DefineTableName();
    abstract protected function DefineRelationMap();
 
-   public function __construct(PDO $objPDO,$log = NULL, $className = NULL, $log2 = NULL, $className2 = NULL) {
+   public function __construct(PDO $objPDO, $id=NULL ) {
 
       $this->strTableName = $this->DefineTableName();
       $this->arRelationMap = $this->DefineRelationMap();
-      
-      $this->objPDO = $objPDO;      
+      $this->objPDO = $objPDO;
       $this->blIsLoaded = false;
 
-      if (isset($log)) {
-         $this->logfile = $className::getInstance();
-      };
-
-      if (isset($log2)) {
-         $this->logpgsql = $className2::getInstance();
-      };
-
-      if (isset($className)) {
-         $this->classNameFile = $className;
-      };
-
-      if (isset($className2)) {
-         $this->classNamePgsql = $className2;
-      };
-
+     
       $this->arModifiedRelations = array();
-
    }
+
 
    public function Load() {     
 
@@ -197,19 +181,20 @@ abstract class DataBoundObject {
       date_default_timezone_set('America/New_York');
       $formatterDate = DateTimeImmutable::createFromFormat('U',time());
       $time = $formatterDate->format('Y-m-d H:i:s');
-      $IdLog = 0;
+
       if (isset($this->ID)) {
          $IdLog = $this->ID;
-      } 
-
+      } else {
+         $IdLog = 0;
+      }
       $active = $this->IsActive;
       
       echo '<br> se mete en logfile';
       var_dump($this->logfile);
-      $this->logfile->logMessage($IdLog,$active,$time,'FUNCION INCORRECTA.', $this->classNameFile::DEBUG);
+      $this->logfile->logMessage($idLog,$active,$time,'FUNCION INCORRECTA.', $this->classNameFile::DEBUG);
 
       echo '<br> se mete en pgsql';
-      $this->logpgsql->logMessage($IdLog,$active,$time,'FUNCION INCORRECTA.', $this->classNameFile::DEBUG);
+      $this->logpgsql->logMessage($idLog,$active,$time,'FUNCION INCORRECTA.', $this->classNameFile::DEBUG);
 
          
          

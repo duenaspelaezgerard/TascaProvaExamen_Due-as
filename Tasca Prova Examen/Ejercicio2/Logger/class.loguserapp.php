@@ -1,6 +1,6 @@
 <?php 
 
-        include_once("abstract.databoundobject.php");
+        include_once("abstract.databoundobject2.php");
 
         class LogUserApp extends DataBoundObject {
 
